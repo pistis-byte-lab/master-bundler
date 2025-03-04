@@ -9,6 +9,9 @@ export interface BundleOptions {
     target?: string[];
     external?: string[];
     globals?: Record<string, string>;
+    progress?: boolean;
+    chunkFileNames?: string;
+    manualChunks?: Record<string, string[]> | ((id: string) => string | null | undefined);
 }
 export interface BuildResult {
     code: string;
@@ -22,5 +25,7 @@ export interface CliFlags {
     sourcemap?: boolean;
     outDir?: string;
     watchDir?: string;
+    progress?: boolean;
+    chunkFileNames?: string;
 }
 //# sourceMappingURL=index.d.ts.map

@@ -97,6 +97,191 @@ export class Watcher {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Verify content again before rebuild
+
+import chokidar from 'chokidar';
+import { logger } from './utils/logger';
+import { bundle } from './bundler';
+import { BundleOptions } from './types';
+import path from 'path';
+import fs from 'fs';
+import WebSocket from 'ws';
+
+let wss: WebSocket.Server | null = null;
+let lastBuildTimestamp = 0;
+const buildDebounceTime = 500; // ms
+let buildTimeout: NodeJS.Timeout | null = null;
+let isFirstBuild = true;
+
+export async function startWatcher(options: BundleOptions & { watchDir?: string, liveReload?: boolean }): Promise<void> {
+  const watchDir = options.watchDir || path.dirname(options.input);
+  logger.info(`Watching directory: ${watchDir}`);
+
+  if (options.liveReload) {
+    startLiveReloadServer();
+  }
+
+  // Initial build
+  try {
+    await performBuild(options);
+    isFirstBuild = false;
+  } catch (error) {
+    logger.error('Initial build failed:', error);
+  }
+
+  const watcher = chokidar.watch(watchDir, {
+    ignored: ['**/node_modules/**', '**/dist/**'],
+    persistent: true,
+    ignoreInitial: true,
+    awaitWriteFinish: {
+      stabilityThreshold: 300,
+      pollInterval: 100
+    }
+  });
+
+  watcher
+    .on('add', (filePath) => handleFileChange('added', filePath, options))
+    .on('change', (filePath) => handleFileChange('changed', filePath, options))
+    .on('unlink', (filePath) => handleFileChange('removed', filePath, options))
+    .on('error', (error) => logger.error(`Watcher error: ${error}`));
+
+  logger.info('Watching for file changes...');
+}
+
+async function handleFileChange(type: 'added' | 'changed' | 'removed', filePath: string, options: BundleOptions & { liveReload?: boolean }): Promise<void> {
+  logger.info(`File ${type}: ${filePath}`);
+  
+  // Ensure file stability (in case of editors that write in chunks)
+  try {
+    if (type !== 'removed' && fs.existsSync(filePath)) {
+      const stats = fs.statSync(filePath);
+      if (Date.now() - stats.mtimeMs < 100) {
+        logger.debug('File is still being written, waiting for stability...');
+        return;
+      }
+    }
+  } catch (error) {
+    logger.error('Error checking file stability:', error);
+  }
+
+  // Debounce build
+  if (buildTimeout) {
+    clearTimeout(buildTimeout);
+  }
+
+  buildTimeout = setTimeout(async () => {
+    try {
+      await performBuild(options);
+      
+      if (options.liveReload) {
+        notifyBrowsersOfChange();
+      }
+    } catch (error) {
+      logger.error('Build failed:', error);
+    }
+  }, buildDebounceTime);
+}
+
+async function performBuild(options: BundleOptions): Promise<void> {
+  const startTime = Date.now();
+  lastBuildTimestamp = startTime;
+  
+  logger.info('Rebuilding...');
+  
+  try {
+    await bundle(options);
+    logger.info(`Build completed in ${Date.now() - startTime}ms`);
+  } catch (error) {
+    logger.error('Build error:', error);
+    throw error;
+  }
+}
+
+// Live reload server
+function startLiveReloadServer(): void {
+  if (wss) {
+    return; // Already running
+  }
+
+  const PORT = 8081;
+  wss = new WebSocket.Server({ port: PORT });
+  
+  wss.on('connection', (ws) => {
+    logger.info('Live reload client connected');
+    
+    ws.on('close', () => {
+      logger.debug('Live reload client disconnected');
+    });
+  });
+  
+  logger.info(`Live reload server started on port ${PORT}`);
+  
+  // Add live reload script to HTML files
+  injectLiveReloadScript();
+}
+
+function notifyBrowsersOfChange(): void {
+  if (!wss) return;
+  
+  logger.debug('Notifying browsers of change');
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({ type: 'reload', timestamp: Date.now() }));
+    }
+  });
+}
+
+function injectLiveReloadScript(): void {
+  const liveReloadScript = `
+<script>
+  (function() {
+    const socket = new WebSocket('ws://' + window.location.hostname + ':8081');
+    socket.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'reload') {
+        window.location.reload();
+      }
+    });
+    socket.addEventListener('close', () => {
+      console.log('Live reload connection closed. Attempting to reconnect in 5s...');
+      setTimeout(() => { 
+        window.location.reload();
+      }, 5000);
+    });
+  })();
+</script>
+  `;
+  
+  // Find all HTML files in output directory and inject the script
+  const outputDir = path.resolve(process.cwd(), 'dist');
+  if (fs.existsSync(outputDir)) {
+    injectScriptToDirectory(outputDir, liveReloadScript);
+  }
+}
+
+function injectScriptToDirectory(dir: string, script: string): void {
+  try {
+    const files = fs.readdirSync(dir);
+    
+    files.forEach(file => {
+      const filePath = path.join(dir, file);
+      const stats = fs.statSync(filePath);
+      
+      if (stats.isDirectory()) {
+        injectScriptToDirectory(filePath, script);
+      } else if (file.endsWith('.html')) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        if (!content.includes('ws://') && content.includes('</body>')) {
+          const newContent = content.replace('</body>', `${script}</body>`);
+          fs.writeFileSync(filePath, newContent);
+          logger.debug(`Injected live reload script into ${filePath}`);
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Error injecting live reload script:', error);
+  }
+}
+
       const verifyState = await this.waitForFileStability(filePath);
       if (!verifyState || verifyState.content !== fileState.content) {
         logger.warning('File content changed during stability check');

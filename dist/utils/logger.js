@@ -9,6 +9,8 @@ exports.logger = {
     info: (message) => console.log(chalk_1.default.blue('info'), message),
     success: (message) => console.log(chalk_1.default.green('success'), message),
     warning: (message) => console.log(chalk_1.default.yellow('warning'), message),
-    error: (message) => console.error(chalk_1.default.red('error'), message),
+    error: (message, ...args) => console.error(chalk_1.default.red('error'), message, ...args),
+    debug: (message) => console.log(chalk_1.default.gray('debug'), message),
+    warn: (message) => console.log(chalk_1.default.yellow('warn'), message),
 };
 //# sourceMappingURL=logger.js.map

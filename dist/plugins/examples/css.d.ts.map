@@ -1,0 +1,1 @@
+{"version":3,"file":"css.d.ts","sourceRoot":"","sources":["../../../src/plugins/examples/css.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;AAOjD,qBAAa,SAAU,YAAW,MAAM;IACtC,IAAI,SAAS;IACb,OAAO,CAAC,gBAAgB,CAAoB;;IAc5C,KAAK,CAAC,OAAO,EAAE,GAAG,GAAG,IAAI;IAInB,SAAS,CAAC,OAAO,EAAE,aAAa,GAAG,OAAO,CAAC,MAAM,CAAC;IA8CxD,OAAO,IAAI,IAAI;CAGhB"}

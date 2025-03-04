@@ -22,6 +22,9 @@ commander_1.program
     .option('-s, --sourcemap', 'Generate source maps', true)
     .option('--out-dir <dir>', 'Output directory')
     .option('--watch-dir <dir>', 'Directory to watch in watch mode (defaults to input file directory)')
+    .option('--no-progress', 'Disable progress indicators')
+    .option('--chunk-file-names <pattern>', 'Pattern for chunk file names (e.g., [name]-[hash].js)')
+    .option('-l, --liveReload', 'Enable live reload when in watch mode') // Added liveReload option
     .action(async (input, flags) => {
     try {
         const cwd = process.cwd();
@@ -30,7 +33,8 @@ commander_1.program
             cwd,
             input,
             absolutePath,
-            fileExists: fs_1.default.existsSync(absolutePath)
+            fileExists: fs_1.default.existsSync(absolutePath),
+            progress: flags.progress
         }, null, 2)}`);
         const options = {
             input: absolutePath,
@@ -38,7 +42,10 @@ commander_1.program
             minify: flags.minify,
             sourcemap: flags.sourcemap,
             outDir: flags.outDir && path_1.default.resolve(cwd, flags.outDir),
-            watchDir: flags.watchDir
+            watchDir: flags.watchDir,
+            progress: flags.progress,
+            chunkFileNames: flags.chunkFileNames,
+            liveReload: flags.liveReload // Added liveReload to options
         };
         if (flags.watch) {
             logger_1.logger.info('Starting watch mode...');

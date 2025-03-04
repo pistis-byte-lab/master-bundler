@@ -21,4 +21,17 @@ export declare class Config {
 export declare const config: Config;
 export declare function createDefaultConfig(input: string): BundleOptions;
 export declare function resolveConfig(options: Partial<BundleOptions>): BundleOptions;
+interface EnvConfig {
+    [key: string]: string;
+}
+export interface FullConfig extends BundleOptions {
+    plugins?: string[];
+    pluginOptions?: Record<string, any>;
+    env?: EnvConfig;
+    environments?: {
+        [env: string]: Partial<BundleOptions>;
+    };
+}
+export declare function loadConfig(configPath?: string): FullConfig;
+export {};
 //# sourceMappingURL=config.d.ts.map

@@ -49,3 +49,7 @@ args = "NODE_ENV=test npx jest tests/asset-plugin.test.ts tests/code-splitting.t
 
 [deployment]
 run = ["sh", "-c", "npx tsc && node dist/cli.js --help"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80

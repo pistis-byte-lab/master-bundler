@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = exports.Config = void 0;
 exports.createDefaultConfig = createDefaultConfig;
 exports.resolveConfig = resolveConfig;
+exports.loadConfig = loadConfig;
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const logger_1 = require("./utils/logger");
@@ -106,5 +107,113 @@ function resolveConfig(options) {
     const mergedConfig = configInstance.mergeConfig(options);
     configInstance.validateConfig(mergedConfig);
     return mergedConfig;
+}
+const dotenv_1 = __importDefault(require("dotenv"));
+function loadConfig(configPath) {
+    const defaultConfigPaths = [
+        'bundler.config.js',
+        'bundler.config.json',
+        'bundler.config.ts'
+    ];
+    let resolvedConfigPath = configPath;
+    // If no config path provided, try to find one
+    if (!resolvedConfigPath) {
+        for (const p of defaultConfigPaths) {
+            if (fs_1.default.existsSync(p)) {
+                resolvedConfigPath = p;
+                break;
+            }
+        }
+    }
+    if (!resolvedConfigPath || !fs_1.default.existsSync(resolvedConfigPath)) {
+        logger_1.logger.warn('No configuration file found, using defaults');
+        return {};
+    }
+    try {
+        let config;
+        if (resolvedConfigPath.endsWith('.js')) {
+            config = require(path_1.default.resolve(resolvedConfigPath));
+        }
+        else if (resolvedConfigPath.endsWith('.json')) {
+            const fileContent = fs_1.default.readFileSync(resolvedConfigPath, 'utf8');
+            config = JSON.parse(fileContent);
+        }
+        else if (resolvedConfigPath.endsWith('.ts')) {
+            // For TS configs, we'll need to use ts-node to require it
+            require('ts-node').register({
+                transpileOnly: true,
+                compilerOptions: { module: 'commonjs' }
+            });
+            config = require(path_1.default.resolve(resolvedConfigPath));
+        }
+        else {
+            throw new Error(`Unsupported config file format: ${resolvedConfigPath}`);
+        }
+        // Load environment variables
+        loadEnvironmentVariables(config);
+        // Apply environment-specific configuration
+        applyEnvironmentConfig(config);
+        validateConfig(config);
+        return config;
+    }
+    catch (error) {
+        logger_1.logger.error(`Failed to load config from ${resolvedConfigPath}:`, error);
+        throw new Error(`Failed to load config: ${error.message}`);
+    }
+}
+function loadEnvironmentVariables(config) {
+    // Load from .env file
+    const envPath = path_1.default.resolve(process.cwd(), '.env');
+    if (fs_1.default.existsSync(envPath)) {
+        const envResult = dotenv_1.default.config({ path: envPath });
+        if (envResult.error) {
+            logger_1.logger.warn(`Error loading .env file: ${envResult.error.message}`);
+        }
+        else {
+            logger_1.logger.debug('Loaded environment variables from .env file');
+        }
+    }
+    // Override with environment-specific .env file
+    const nodeEnv = process.env.NODE_ENV || 'development';
+    const envSpecificPath = path_1.default.resolve(process.cwd(), `.env.${nodeEnv}`);
+    if (fs_1.default.existsSync(envSpecificPath)) {
+        const envResult = dotenv_1.default.config({ path: envSpecificPath });
+        if (envResult.error) {
+            logger_1.logger.warn(`Error loading .env.${nodeEnv} file: ${envResult.error.message}`);
+        }
+        else {
+            logger_1.logger.debug(`Loaded environment variables from .env.${nodeEnv} file`);
+        }
+    }
+    // Add custom env variables from config
+    if (config.env) {
+        for (const [key, value] of Object.entries(config.env)) {
+            process.env[key] = value;
+        }
+    }
+}
+function applyEnvironmentConfig(config) {
+    const nodeEnv = process.env.NODE_ENV || 'development';
+    // Apply environment-specific configuration if available
+    if (config.environments && config.environments[nodeEnv]) {
+        const envConfig = config.environments[nodeEnv];
+        logger_1.logger.info(`Applying ${nodeEnv} environment configuration`);
+        // Merge the environment-specific config with the base config
+        Object.assign(config, envConfig);
+    }
+}
+function validateConfig(config) {
+    if (!config.input && !config.input) {
+        logger_1.logger.warn('No input file specified in config');
+    }
+    if (config.format && !['esm', 'umd', 'cjs'].includes(config.format)) {
+        logger_1.logger.warn(`Invalid format: ${config.format}. Using default 'esm' format.`);
+        config.format = 'esm';
+    }
+    if (config.minify !== undefined && typeof config.minify !== 'boolean') {
+        logger_1.logger.warn(`Invalid minify option: ${config.minify}. Using default 'false'.`);
+        config.minify = false;
+    }
+    // More validations can be added here
 }
 //# sourceMappingURL=config.js.map

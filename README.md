@@ -1,5 +1,9 @@
 # TypeScript Bundler
 
+> 🚧 **WORK IN PROGRESS** 🚧
+> 
+> Este projeto está em desenvolvimento ativo e não está pronto para uso em produção. Funcionalidades podem mudar ou estar incompletas.
+
 A modern TypeScript bundler with support for multiple module formats, tree shaking, and optimizations.
 
 ## Features

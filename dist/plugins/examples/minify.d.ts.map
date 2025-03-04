@@ -1,0 +1,1 @@
+{"version":3,"file":"minify.d.ts","sourceRoot":"","sources":["../../../src/plugins/examples/minify.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;AAGjD,qBAAa,YAAa,YAAW,MAAM;IACzC,IAAI,SAAY;IAEhB,KAAK,CAAC,OAAO,EAAE,GAAG,GAAG,IAAI;IAInB,SAAS,CAAC,OAAO,EAAE,aAAa,GAAG,OAAO,CAAC,MAAM,CAAC;IAWxD,OAAO,IAAI,IAAI;CAGhB"}

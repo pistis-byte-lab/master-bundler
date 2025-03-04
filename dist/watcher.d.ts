@@ -6,11 +6,11 @@ export declare class Watcher {
     private watcher;
     private options;
     private rebuilding;
-    private lastChange;
-    private pendingChange;
+    private lastState;
+    private changeTimeout;
     constructor(options: WatchOptions);
-    private verifyFile;
-    private processFileChange;
+    private waitForFileStability;
+    private rebuild;
     start(): Promise<void>;
     stop(): Promise<void>;
 }

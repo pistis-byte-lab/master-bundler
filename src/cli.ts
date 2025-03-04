@@ -22,6 +22,7 @@ program
   .option('--watch-dir <dir>', 'Directory to watch in watch mode (defaults to input file directory)')
   .option('--no-progress', 'Disable progress indicators')
   .option('--chunk-file-names <pattern>', 'Pattern for chunk file names (e.g., [name]-[hash].js)')
+  .option('-l, --liveReload', 'Enable live reload when in watch mode') // Added liveReload option
   .action(async (input: string, flags: CliFlags) => {
     try {
       const cwd = process.cwd();
@@ -43,7 +44,8 @@ program
         outDir: flags.outDir && path.resolve(cwd, flags.outDir),
         watchDir: flags.watchDir,
         progress: flags.progress,
-        chunkFileNames: flags.chunkFileNames
+        chunkFileNames: flags.chunkFileNames,
+        liveReload: flags.liveReload // Added liveReload to options
       };
 
       if (flags.watch) {
