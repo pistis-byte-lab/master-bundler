@@ -151,6 +151,18 @@
     - [x] Implementar nova solução
 
 ### Integração com Frameworks
+- [x] Suporte a React
+  - [x] JSX/TSX
+  - [x] Hot Module Replacement (HMR)
+  - [x] Fast Refresh
+- [x] Suporte a Vue
+  - [x] Single File Components (.vue)
+  - [x] Composition API
+  - [x] Hot Module Replacement (HMR)
+- [x] Suporte a Angular
+  - [x] Compilação AOT
+  - [x] Ivy renderer
+  - [x] Hot Module Replacement (HMR)
 - [x] Suporte a Svelte
   - [x] Compilação de componentes Svelte
   - [x] Hot Module Replacement (HMR)
