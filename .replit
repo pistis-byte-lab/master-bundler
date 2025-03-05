@@ -1,11 +1,11 @@
-modules = ["nodejs-20"]
-run = "npm run start"
+modules = ["nodejs-20", "web"]
+run = "npm run dev"
 
 [nix]
 channel = "stable-24_05"
 
 [workflows]
-runButton = "Docs Server"
+runButton = "TypeScript Bundler"
 
 [[workflows.workflow]]
 name = "Project"
@@ -57,7 +57,7 @@ task = "shell.exec"
 args = "npm run docs:dev"
 
 [deployment]
-run = ["sh", "-c", "npm run start"]
+run = ["sh", "-c", "npm run dev"]
 
 [[ports]]
 localPort = 3000

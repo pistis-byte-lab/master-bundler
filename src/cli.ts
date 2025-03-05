@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { program } from 'commander';
+import { Command } from 'commander';
+const program = new Command();
 import { bundle } from './bundler';
 import { Watcher } from './watcher';
 import { logger } from './utils/logger';
@@ -101,7 +102,8 @@ registerMarketplaceCommands(program);
 // Registra comandos de estratégias de bundling
 registerBundlingStrategyCommands(program);
 
-//Registra comandos de patrocínio
-setupSponsorCommands(program); //This line needs to be added
+// Importa e registra comandos de patrocínio
+import { setupSponsorCommands } from './commands/sponsor';
+setupSponsorCommands(program);
 
 program.parse(process.argv);

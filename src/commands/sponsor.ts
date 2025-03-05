@@ -140,3 +140,50 @@ export function setupSponsorCommands(program: Command): void {
 
   return sponsorCommand;
 }
+import { Command } from 'commander';
+import { logger } from '../utils/logger';
+import chalk from 'chalk';
+
+export function setupSponsorCommands(program: Command): void {
+  const sponsor = program
+    .command('sponsor')
+    .description('Comandos relacionados a patrocínio e suporte');
+
+  sponsor
+    .command('info')
+    .description('Mostra informações sobre como apoiar o projeto')
+    .action(() => {
+      console.log(chalk.greenBright('='.repeat(50)));
+      console.log(chalk.blueBright(' TypeScript Bundler - Apoie o Projeto'));
+      console.log(chalk.greenBright('='.repeat(50)));
+      console.log(chalk.white('\nSe você está usando e gostando deste projeto,'));
+      console.log(chalk.white('considere apoiar o desenvolvimento:'));
+      console.log(chalk.yellow('\n• GitHub Sponsors: github.com/sponsors/typescript-bundler'));
+      console.log(chalk.yellow('• Open Collective: opencollective.com/typescript-bundler'));
+      console.log(chalk.yellow('• Ko-fi: ko-fi.com/typescriptbundler'));
+      console.log(chalk.greenBright('\nSua contribuição ajuda a manter este projeto ativo e saudável!'));
+      console.log(chalk.greenBright('='.repeat(50)));
+    });
+
+  sponsor
+    .command('list')
+    .description('Lista os patrocinadores do projeto')
+    .action(() => {
+      logger.info('Carregando lista de patrocinadores...');
+      
+      // Aqui poderíamos implementar uma chamada para API ou arquivo local
+      // com a lista de patrocinadores
+      
+      console.log(chalk.yellowBright('\n✨ Patrocinadores Gold ✨'));
+      console.log('• Empresa XYZ');
+      console.log('• Contribuidor Individual ABC');
+      
+      console.log(chalk.silver('\n🥈 Patrocinadores Silver 🥈'));
+      console.log('• Empresa DEF');
+      console.log('• Contribuidor GHI');
+      
+      console.log(chalk.greenBright('\nObrigado a todos que apoiam este projeto!'));
+    });
+
+  return sponsor;
+}

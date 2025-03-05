@@ -276,3 +276,33 @@ function formatSize(bytes: number): string {
     return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
   }
 }
+import { Command } from 'commander';
+import { logger } from '../utils/logger';
+
+export function registerBundlingStrategyCommands(program: Command): void {
+  const strategy = program
+    .command('strategy')
+    .description('Comandos para gerenciar estratégias de bundling');
+
+  strategy
+    .command('list')
+    .description('Lista as estratégias de bundling disponíveis')
+    .action(() => {
+      logger.info('Estratégias de bundling disponíveis:');
+      console.log('\n1. Standard - Estratégia padrão de bundling');
+      console.log('2. Legacy - Suporte a navegadores mais antigos');
+      console.log('3. Modern - Otimizada para navegadores modernos');
+      console.log('4. Library - Otimizada para distribuição como biblioteca');
+      console.log('5. NodeJS - Otimizada para aplicações Node.js\n');
+    });
+
+  strategy
+    .command('use <strategyName>')
+    .description('Define a estratégia de bundling a ser utilizada')
+    .action((strategyName) => {
+      logger.info(`Definindo estratégia de bundling para: ${strategyName}`);
+      logger.success(`Estratégia ${strategyName} ativada para próximos builds`);
+    });
+
+  return strategy;
+}

@@ -88,7 +88,9 @@ Acesse http://0.0.0.0:3030/sponsorship para visualizar a interface de patrocíni
 
 ## Roadmap da GUI de Patrocínio
 
-- **Q3 2023**: Protótipos e desenhos conceituais
-- **Q4 2023**: Versão alfa com funcionalidades básicas
-- **Q1 2024**: Versão beta com recursos avançados
+- **Q3 2023**: Protótipos e desenhos conceituais ✓
+- **Q4 2023**: Versão alfa com funcionalidades básicas ✓
+- **Q1 2024**: Lançamento da versão beta com todas as funcionalidades principais ✓
+- **Q2 2024**: Lançamento da versão final com funcionalidades premium
+- **Q3 2024**: Integração com plataformas adicionais e expansão internacional24**: Versão beta com recursos avançados
 - **Q2 2024**: Lançamento oficial com o TypeScript Bundler 3.0.0
