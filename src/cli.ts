@@ -3,9 +3,31 @@ import { program } from 'commander';
 import { bundle } from './bundler';
 import { Watcher } from './watcher';
 import { logger } from './utils/logger';
-import { CliFlags } from './types';
 import fs from 'fs';
 import path from 'path';
+import { formatError } from './utils/error-handler';
+import { analyzeDependencies } from './commands/analyze-deps';
+import { analyze } from './analyze-cli';
+import { registerMarketplaceCommands } from './commands/marketplace';
+import { registerBundlingStrategyCommands } from './commands/bundling-strategy';
+
+interface CliFlags {
+  watch?: boolean;
+  output?: string;
+  format?: 'esm' | 'cjs' | 'umd';
+  sourcemap?: boolean;
+  minify?: boolean;
+  config?: string;
+  name?: string;
+  help?: boolean;
+  version?: boolean;
+  target?: string | string[];
+  liveReload?: boolean;
+  progress?: boolean;
+  outDir?: string;
+  watchDir?: string;
+  chunkFileNames?: string;
+}
 
 program
   .name('ts-bundler')
@@ -22,7 +44,9 @@ program
   .option('--watch-dir <dir>', 'Directory to watch in watch mode (defaults to input file directory)')
   .option('--no-progress', 'Disable progress indicators')
   .option('--chunk-file-names <pattern>', 'Pattern for chunk file names (e.g., [name]-[hash].js)')
-  .option('-l, --liveReload', 'Enable live reload when in watch mode') // Added liveReload option
+  .option('-l, --liveReload', 'Enable live reload when in watch mode')
+  .option('--plugins <plugins>', 'Comma-separated list of plugins to use')
+  .option('--plugin-config <path>', 'Path to plugin configuration file')
   .action(async (input: string, flags: CliFlags) => {
     try {
       const cwd = process.cwd();
@@ -45,7 +69,10 @@ program
         watchDir: flags.watchDir,
         progress: flags.progress,
         chunkFileNames: flags.chunkFileNames,
-        liveReload: flags.liveReload // Added liveReload to options
+        liveReload: flags.liveReload, // Added liveReload to options
+        plugins: flags.plugins ? flags.plugins.split(',').map(p => p.trim()) : undefined,
+        pluginConfigPath: flags.pluginConfig,
+        watchMode: flags.watch
       };
 
       if (flags.watch) {
@@ -62,10 +89,19 @@ program
         logger.success('Bundle completed successfully!');
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = formatError(error);
       logger.error(`Failed to bundle: ${errorMessage}`);
       process.exit(1);
     }
   });
 
-program.parse();
+// Registra comandos do marketplace de plugins
+registerMarketplaceCommands(program);
+
+// Registra comandos de estratégias de bundling
+registerBundlingStrategyCommands(program);
+
+//Registra comandos de patrocínio
+setupSponsorCommands(program); //This line needs to be added
+
+program.parse(process.argv);

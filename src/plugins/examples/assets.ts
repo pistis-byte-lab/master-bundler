@@ -177,7 +177,7 @@ export class AssetPlugin implements Plugin {
     }
 
     try {
-      const isAsset = config.patterns.some(pattern => {
+      const isAsset = config.patterns.some((pattern: string) => {
         const regex = new RegExp(pattern.replace(/\*/g, '.*'));
         return regex.test(filePath);
       });
@@ -190,9 +190,9 @@ export class AssetPlugin implements Plugin {
       logger.info(`Config: ${JSON.stringify(config, null, 2)}`);
 
       const hash = config.fingerprint?.enabled ? 
-        await this.generateFingerprint(filePath, config) : '';
+        await this.generateFingerprint(filePath, config as AssetPluginConfig) : '';
 
-      let outputPath = this.getOutputPath(filePath, config, options);
+      let outputPath = this.getOutputPath(filePath, config as AssetPluginConfig, options);
 
       if (hash) {
         const fingerprintedPath = this.getFingerprintedPath(outputPath, hash);
@@ -207,7 +207,7 @@ export class AssetPlugin implements Plugin {
         fs.copyFileSync(filePath, outputPath);
         logger.info(`Copied font: ${filePath} → ${outputPath}`);
       } else {
-        await this.optimizeImage(filePath, outputPath, config);
+        await this.optimizeImage(filePath, outputPath, config as AssetPluginConfig);
       }
 
       return context.content;

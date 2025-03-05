@@ -1,10 +1,11 @@
 modules = ["nodejs-20"]
+run = "npm run start"
 
 [nix]
 channel = "stable-24_05"
 
 [workflows]
-runButton = "Project"
+runButton = "Docs Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -31,7 +32,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npx tsc && node dist/cli.js --help"
+args = "npx tsx src/cli.ts --help"
 
 [[workflows.workflow]]
 name = "Test Runner"
@@ -47,9 +48,21 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "NODE_ENV=test npx jest tests/asset-plugin.test.ts tests/code-splitting.test.ts --verbose"
 
+[[workflows.workflow]]
+name = "Docs Server"
+author = 40208561
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run docs:dev"
+
 [deployment]
-run = ["sh", "-c", "npx tsc && node dist/cli.js --help"]
+run = ["sh", "-c", "npm run start"]
 
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[[ports]]
+localPort = 3001
+externalPort = 3001

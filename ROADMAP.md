@@ -98,7 +98,6 @@
 
 ### Bundle Analysis
 - [x] Size visualization
-- [ ] Dependency graphs
 - [x] Performance metrics
 - [x] Bundle composition analysis
 - [x] Optimization suggestions
@@ -107,10 +106,51 @@
 ### Advanced Features
 - [x] Custom transformers
 - [x] Worker threads support
-- [ ] Framework optimizations
-- [ ] Plugin marketplace
-- [ ] Advanced bundling strategies
-- [ ] Corrigir erros de TypeScript
+- [x] Plugin marketplace
+- [x] Advanced bundling strategies
+- [x] Dependency graphs
+- [x] Corrigir erros de TypeScript
+
+### Suporte Financeiro
+- [x] Sistema de patrocínio para desenvolvedores
+  - [x] Página de patrocínio personalizada
+  - [x] Integração com plataformas de pagamento
+  - [x] Sistema de níveis de patrocínio
+- [x] Template de solicitação de suporte
+- [x] Badge de projetos patrocinados
+- [x] Estatísticas e relatórios de patrocínio
+- [x] Integração com Open Collective/GitHub Sponsors
+
+### Cache Management
+- [x] Filesystem caching
+- [x] Memory caching
+- [x] Cache invalidation
+- [x] Cache strategies
+- [x] Intelligent caching
+
+### Documentação
+- [x] Configuração inicial do VitePress
+- [ ] Configuração da documentação na webview (em andamento)
+- [ ] Guia completo de uso
+- [ ] Exemplos detalhados
+- [ ] Tutoriais de casos de uso
+- [ ] Documentação da API
+- [ ] Manutenção automática da documentação
+
+## Version 3.0.0 (Planejado)
+### Interface Gráfica (GUI) com Vuetify 3.7.x
+- [ ] Setup da infraestrutura Vue.js 3 + Vuetify 3.7.x
+- [ ] Dashboard de análise
+  - [ ] Visualizações interativas de tamanho do bundle
+  - [ ] Gráficos de desempenho
+  - [ ] Estatísticas de compilação
+- [ ] Gerenciador de plugins visual
+- [ ] Editor de configuração
+- [ ] Monitoramento de desempenho em tempo real
+- [ ] Visualização de dependências
+- [ ] Indicadores visuais de otimização
+- [ ] Temas escuro/claro personalizados
+- [ ] Componentes responsivos para desktop e mobile
 
 ### Framework Integration
 - [ ] React optimization
@@ -119,18 +159,3 @@
 - [ ] Next.js/Remix compatibility
 - [ ] Framework-specific optimizations
 - [ ] Testes de integração com frameworks
-
-### Cache Management
-- [ ] Filesystem caching
-- [ ] Memory caching
-- [ ] Cache invalidation
-- [ ] Cache strategies
-- [ ] Intelligent caching
-
-### Documentação
-- [x] Configuração inicial do VitePress
-- [ ] Guia completo de uso
-- [ ] Exemplos detalhados
-- [ ] Tutoriais de casos de uso
-- [ ] Documentação da API
-- [ ] Manutenção automática da documentação

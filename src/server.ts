@@ -3,8 +3,10 @@ import express from 'express';
 import path from 'path';
 import http from 'http';
 import { logger } from './utils/logger';
-import { bundle, BundleOptions } from './bundler';
-import { startWatcher } from './watcher';
+import { bundle } from './bundler';
+import { BundleOptions } from './types';
+// Importação corrigida após implementação do watcher
+import { startWatcher } from './utils/watcher';
 import WebSocket from 'ws';
 import fs from 'fs';
 import { createProxyMiddleware } from 'http-proxy-middleware';

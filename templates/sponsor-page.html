@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patrocine {{PROJECT_NAME}}</title>
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2ecc71;
+      --dark-color: #2c3e50;
+      --light-color: #ecf0f1;
+      --warning-color: #e74c3c;
+      --success-color: #27ae60;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: var(--dark-color);
+      background-color: var(--light-color);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    .sponsor-options {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    .sponsor-button {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .sponsor-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .github {
+      background-color: #24292e;
+    }
+
+    .opencollective {
+      background-color: #7FADF2;
+    }
+
+    .patreon {
+      background-color: #F96854;
+    }
+
+    .kofi {
+      background-color: #29ABE0;
+    }
+
+    .bmac {
+      background-color: #FFDD00;
+      color: #000000;
+    }
+
+    .custom {
+      background-color: var(--secondary-color);
+    }
+
+    .tiers {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .sponsor-tier {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .sponsor-tier:hover {
+      transform: translateY(-5px);
+    }
+
+    .tier-amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin: 10px 0;
+    }
+
+    .tier-benefits {
+      list-style-position: inside;
+      margin-bottom: 20px;
+    }
+
+    .tier-button {
+      display: block;
+      text-align: center;
+      background-color: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .tier-button:hover {
+      background-color: darken(var(--primary-color), 10%);
+    }
+
+    .featured-sponsors {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .featured-sponsors h2 {
+      margin-bottom: 20px;
+    }
+
+    .featured-sponsor {
+      display: inline-block;
+      margin: 10px;
+    }
+
+    .featured-sponsor img {
+      max-width: 150px;
+      max-height: 100px;
+      transition: transform 0.2s;
+    }
+
+    .featured-sponsor img:hover {
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .tiers {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Patrocine {{PROJECT_NAME}}</h1>
+    <p>{{PROJECT_DESCRIPTION}}</p>
+    <div class="sponsor-options">
+      {{SPONSOR_LINKS}}
+    </div>
+  </header>
+
+  <section>
+    <h2>Níveis de Patrocínio</h2>
+    <div class="tiers">
+      {{SPONSOR_TIERS}}
+    </div>
+  </section>
+
+  <section class="featured-sponsors">
+    <h2>Patrocinadores em Destaque</h2>
+    <div class="featured-sponsor-list">
+      {{FEATURED_SPONSORS}}
+    </div>
+  </section>
+
+  <section>
+    <h2>Por que patrocinar?</h2>
+    <p>
+      Seu patrocínio ajuda a garantir o desenvolvimento contínuo deste projeto de código aberto. 
+      Os fundos são usados para:
+    </p>
+    <ul>
+      <li>Manter e melhorar a documentação</li>
+      <li>Desenvolver novos recursos</li>
+      <li>Corrigir bugs e problemas de segurança</li>
+      <li>Fornecer suporte à comunidade</li>
+      <li>Cobrir custos de infraestrutura</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Obrigado por considerar patrocinar este projeto!</p>
+    <p>&copy; 2023 {{PROJECT_NAME}} - Todos os direitos reservados</p>
+  </footer>
+</body>
+</html>

@@ -48,3 +48,39 @@ ts-bundler --help
 ```
 
 Se tudo estiver correto, você verá a tela de ajuda com todas as opções disponíveis.
+# Instalação
+
+## Requisitos
+
+- Node.js v14 ou superior
+- npm v6 ou superior
+
+## Instalação global
+
+Você pode instalar o TypeScript Bundler globalmente para usá-lo como uma CLI:
+
+```bash
+npm install -g ts-bundler
+```
+
+## Instalação local
+
+Alternativamente, você pode instalá-lo localmente em seu projeto:
+
+```bash
+npm install --save-dev ts-bundler
+```
+
+## Verificação de instalação
+
+Para verificar se a instalação foi bem-sucedida, execute:
+
+```bash
+ts-bundler --version
+```
+
+ou para instalações locais:
+
+```bash
+npx ts-bundler --version
+```

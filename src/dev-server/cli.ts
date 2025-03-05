@@ -78,7 +78,7 @@ export function registerDevServerCommands(program: Command): void {
         overlay: cmdOptions.overlay,
         open: cmdOptions.open,
         hostname: cmdOptions.hostname,
-        config: cmdOptions.config
+        configFile: cmdOptions.config
       };
       
       await runDevServer(options);

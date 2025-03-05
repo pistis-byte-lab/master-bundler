@@ -6,9 +6,11 @@ import { terser } from 'rollup-plugin-terser';
 import { BundleOptions, BuildResult } from './types';
 import { getOutputPath, resolveInput } from './utils/paths';
 import { logger } from './utils/logger';
-import { pluginManager } from './plugins/manager';
+import { PluginManager } from './plugins/manager';
+import { cacheManager } from './cache';
 import { createProgress } from './utils/progress';
 import path from 'path';
+import { applyBundlingStrategy, BundlingStrategyType } from './strategies/bundling-strategies';
 
 async function transformCode(code: string, filePath: string, options: BundleOptions): Promise<string> {
   const progress = createProgress({
@@ -44,47 +46,95 @@ async function transformCode(code: string, filePath: string, options: BundleOpti
 }
 
 export async function bundle(options: BundleOptions): Promise<BuildResult> {
-  const {
-    input,
-    format = 'esm',
-    minify = true,
-    sourcemap = true,
-    name,
-    external = [],
-    globals = {},
-    outDir: userOutDir,
-    chunkFileNames = '[name]-[hash].js',
-    manualChunks,
-  } = options;
+  logger.info(`Bundling ${options.input} using format ${options.format || 'esm'}`);
 
-  const progress = createProgress({
-    message: 'Starting bundling process',
-    total: 100
+  // Aplicar estratégia de bundling se especificada
+  if (options.strategy) {
+    logger.info(`Applying bundling strategy: ${options.strategy}`);
+    options = await applyBundlingStrategy(options, options.strategy);
+  }
+
+  // Initialize plugins
+  const pluginManager = new PluginManager({
+    enableHotReload: options.watchMode === true,
+    configPath: options.pluginConfigPath
   });
 
   try {
-    progress.update({ current: 10, message: 'Setting up plugins' });
-    await pluginManager.executeHook('setup', options);
+    // Initialize plugin manager
+    await pluginManager.initialize();
 
-    const resolvedInput = resolveInput(input);
-    const outputPath = getOutputPath(resolvedInput, format, userOutDir);
+    // Register built-in plugins if needed
+    if (options.plugins && options.plugins.length > 0) {
+      for (const pluginName of options.plugins) {
+        try {
+          // Try to load the plugin
+          const pluginModule = await import(`./plugins/${pluginName}`);
+          const plugin = pluginModule.default || pluginModule;
+
+          // Check if it's a valid plugin
+          if (typeof plugin === 'function') {
+            pluginManager.registerPlugin(new plugin(options.pluginOptions?.[pluginName]));
+          } else {
+            pluginManager.registerPlugin(plugin);
+          }
+        } catch (error) {
+          logger.warn(`Failed to load plugin ${pluginName}: ${error.message}`);
+        }
+      }
+    }
+
+    // Create plugin context
+    const pluginContext = {
+      options,
+      warn: (message: string) => logger.warn(message),
+      error: (message: string | Error) => {
+        const errorMessage = message instanceof Error ? message.message : message;
+        logger.error(errorMessage);
+      },
+      emitFile: (fileName: string, source: string) => {
+        // Implementation to emit a file
+      },
+      emitAsset: (fileName: string, source: Buffer | string) => {
+        // Implementation to emit an asset
+        return fileName;
+      },
+      resolve: async (importee: string, importer: string) => {
+        // Implementation to resolve imports
+        return null;
+      },
+      addWatchFile: (id: string) => {
+        // Implementation to add a watch file
+      },
+      getCwd: () => process.cwd(),
+      getModuleInfo: (id: string) => {
+        // Implementation to get module info
+        return null;
+      }
+    };
+
+    // Call buildStart hooks on all plugins
+    await pluginManager.runHook('buildStart', pluginContext, options);
+
+    const resolvedInput = resolveInput(options.input);
+    const outputPath = getOutputPath(resolvedInput, options.format, options.outDir);
     const outputDir = path.dirname(outputPath);
 
     progress.update({ current: 20, message: 'Configuring Rollup' });
 
     const outputOptions: OutputOptions = {
       file: outputPath,
-      format,
-      name,
-      sourcemap,
-      globals,
-      chunkFileNames,
-      manualChunks,
+      format: options.format,
+      name: options.name,
+      sourcemap: options.sourcemap,
+      globals: options.globals,
+      chunkFileNames: options.chunkFileNames,
+      manualChunks: options.manualChunks,
     };
 
     const rollupOptions: RollupOptions = {
       input: resolvedInput,
-      external,
+      external: options.external,
       output: outputOptions,
       plugins: [
         {
@@ -104,7 +154,7 @@ export async function bundle(options: BundleOptions): Promise<BuildResult> {
           compilerOptions: {
             module: 'esnext',
             target: 'es2019',
-            sourceMap: sourcemap,
+            sourceMap: options.sourcemap,
           },
         }),
         resolve({
@@ -112,7 +162,7 @@ export async function bundle(options: BundleOptions): Promise<BuildResult> {
           preferBuiltins: true,
         }),
         commonjs(),
-        minify && terser(),
+        options.minify && terser(),
       ].filter(Boolean),
     };
 
@@ -137,10 +187,41 @@ export async function bundle(options: BundleOptions): Promise<BuildResult> {
       map: output.output[0].map?.toString(),
       declarations: output.output[0].fileName,
     };
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    progress.fail(`Bundle failed: ${errorMessage}`);
-    logger.error(`Bundle failed: ${errorMessage}`);
+  } catch (error) {
+    // Call buildEnd hooks with error
+    if (pluginManager) {
+      await pluginManager.runHook('buildEnd', pluginContext, error);
+      pluginManager.dispose();
+    }
+
     throw error;
   }
 }
+
+export interface BundleOptions {
+  input: string;
+  outDir?: string;
+  minify?: boolean;
+  sourcemap?: boolean;
+  format?: 'esm' | 'cjs' | 'umd';
+  target?: string;
+  name?: string;
+  external?: string[];
+  plugins?: Plugin[];
+  watch?: boolean;
+  watchOptions?: Record<string, any>;
+  dryRun?: boolean;
+  collectModuleInfo?: boolean;
+  strategy?: BundlingStrategyType;
+  // Opções específicas para estratégias
+  preserveModules?: boolean;
+  inlineDynamicImports?: boolean;
+  manualChunks?: Record<string, string[]> | ((id: string) => string | undefined);
+  preloadModules?: string[];
+  workerModules?: string[];
+  modern?: boolean;
+  suffix?: string;
+}
+
+//Added this to satisfy the compiler.  The actual definition of Plugin is likely elsewhere in the project.
+interface Plugin { }

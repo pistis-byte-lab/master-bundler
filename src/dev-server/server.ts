@@ -21,7 +21,7 @@ export class DevServer {
   private server: http.Server;
   private wss: WebSocket.Server;
   private options: DevServerOptions;
-  private watcher: chokidar.FSWatcher | null = null;
+  private watcher: import('chokidar').FSWatcher | null = null;
 
   constructor(options: Partial<DevServerOptions> = {}) {
     this.options = {
@@ -131,7 +131,7 @@ export class DevServer {
       persistent: true
     });
 
-    this.watcher.on('change', (filePath) => {
+    this.watcher.on('change', (filePath: string) => {
       logger.info(`Arquivo alterado: ${filePath}`);
       this.notifyClients();
     });
