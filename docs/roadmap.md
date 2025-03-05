@@ -1,7 +1,7 @@
 
 # Roadmap
 
-Esta página mostra o plano de desenvolvimento do TypeScript Bundler.
+Esta página mostra o plano de desenvolvimento do Master Bundler.
 
 <script setup>
 import { useData } from 'vitepress'

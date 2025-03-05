@@ -230,6 +230,7 @@ class Watcher {
                 const liveReloadScript = `
 <script>
   (function() {
+    // Master Bundler live reload
     const socket = new WebSocket('ws://' + window.location.hostname + ':8081');
     socket.addEventListener('message', (event) => {
       const data = JSON.parse(event.data);

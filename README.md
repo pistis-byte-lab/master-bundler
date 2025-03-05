@@ -1,4 +1,4 @@
-# TypeScript Bundler
+# Master Bundler
 
 > 🚧 **WORK IN PROGRESS** 🚧
 > 

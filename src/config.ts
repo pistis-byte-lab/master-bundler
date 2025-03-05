@@ -37,6 +37,7 @@ export interface FullConfig extends BundleOptions {
 export function loadConfig(configPath?: string): FullConfig {
   const defaultConfigPaths = [
     'masterbundler.config.ts',
+    'master-bundler.config.ts',
     'bundler.config.js',
     'bundler.config.json',
     'bundler.config.ts'

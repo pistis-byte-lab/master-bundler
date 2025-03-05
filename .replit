@@ -5,7 +5,7 @@ run = "npm run dev"
 channel = "stable-24_05"
 
 [workflows]
-runButton = "TypeScript Bundler"
+runButton = "Master Bundler"
 
 [[workflows.workflow]]
 name = "Project"
@@ -14,14 +14,14 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "TypeScript Bundler"
+args = "Master Bundler"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Test Runner"
 
 [[workflows.workflow]]
-name = "TypeScript Bundler"
+name = "Master Bundler"
 author = "agent"
 
 [workflows.workflow.metadata]
